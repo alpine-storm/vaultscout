@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum StrategyStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum NotificationType {
+  STRATEGY_SIGNAL
+  WALLET_ACTIVITY
+  EXECUTION_RESULT
+  SYSTEM
+}
+
+enum ExecutionStatus {
+  PENDING
+  SUBMITTED
+  CONFIRMED
+  FAILED
+}
+
+model User {
+  id            String         @id @default(cuid())
+  walletAddress String         @unique @map("wallet_address")
+  role          UserRole       @default(USER)
+  nonce         String?
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  sessions      Session[]
+  subscriptions StrategySubscription[]
+  notifications Notification[]
+  executions    Execution[]
+  trackedWallets TrackedWallet[] @relation("UserTrackedWallets")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model TrackedWallet {
+  id          String   @id @default(cuid())
+  address     String
+  label       String?
+  chainId     Int      @map("chain_id")
+  pnlUsd      Decimal  @default(0) @map("pnl_usd") @db.Decimal(20, 2)
+  winRate     Float    @default(0) @map("win_rate")
+  tradeCount  Int      @default(0) @map("trade_count")
+  isPublic    Boolean  @default(true) @map("is_public")
+  addedById   String?  @map("added_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  addedBy     User?    @relation("UserTrackedWallets", fields: [addedById], references: [id])
+  transactions WalletTransaction[]
+  strategies  Strategy[]
+
+  @@unique([address, chainId])
+  @@index([pnlUsd(sort: Desc)])
+  @@map("tracked_wallets")
+}
+
+model WalletTransaction {
+  id          String   @id @default(cuid())
+  walletId    String   @map("wallet_id")
+  hash        String
+  chainId     Int      @map("chain_id")
+  fromAddress String   @map("from_address")
+  toAddress   String   @map("to_address")
+  value       String
+  tokenSymbol String?  @map("token_symbol")
+  action      String
+  blockNumber BigInt   @map("block_number")
+  timestamp   DateTime
+  wallet      TrackedWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@unique([hash, chainId])
+  @@index([walletId, timestamp(sort: Desc)])
+  @@map("wallet_transactions")
+}
+
+model Strategy {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  sourceWalletId String   @map("source_wallet_id")
+  status         StrategyStatus @default(ACTIVE)
+  minCapitalUsd  Decimal  @default(100) @map("min_capital_usd") @db.Decimal(20, 2)
+  rulesJson      Json     @map("rules_json")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  sourceWallet   TrackedWallet @relation(fields: [sourceWalletId], references: [id])
+  subscriptions  StrategySubscription[]
+  signals        StrategySignal[]
+
+  @@map("strategies")
+}
+
+model StrategySubscription {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  strategyId String   @map("strategy_id")
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, strategyId])
+  @@map("strategy_subscriptions")
+}
+
+model StrategySignal {
+  id         String   @id @default(cuid())
+  strategyId String   @map("strategy_id")
+  payload    Json
+  createdAt  DateTime @default(now()) @map("created_at")
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId, createdAt(sort: Desc)])
+  @@map("strategy_signals")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  body      String
+  read      Boolean          @default(false)
+  metadata  Json?
+  createdAt DateTime         @default(now()) @map("created_at")
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+model Execution {
+  id          String          @id @default(cuid())
+  userId      String          @map("user_id")
+  strategyId  String?         @map("strategy_id")
+  txHash      String?         @map("tx_hash")
+  chainId     Int             @map("chain_id")
+  status      ExecutionStatus @default(PENDING)
+  payload     Json
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("executions")
+}
+
+model IndexerCursor {
+  id        String   @id @default("main")
+  chainId   Int      @map("chain_id")
+  block     BigInt
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("indexer_cursors")
+}
