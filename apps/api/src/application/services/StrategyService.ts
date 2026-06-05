@@ -1,5 +1,7 @@
 import type { StrategyDto } from "@vaultscout/shared";
 import { prisma } from "../../infrastructure/database/prisma";
+import { BillingService } from "./BillingService";
+import { AppError } from "../../domain/errors/AppError";
 
 function toDto(
   strategy: {
@@ -26,6 +28,8 @@ function toDto(
 }
 
 export class StrategyService {
+  private billing = new BillingService();
+
   async listStrategies(userId?: string): Promise<StrategyDto[]> {
     const strategies = await prisma.strategy.findMany({
       where: { status: { not: "ARCHIVED" } },
@@ -45,6 +49,15 @@ export class StrategyService {
   }
 
   async subscribe(userId: string, strategyId: string) {
+    await this.billing.requireActiveSubscription(userId);
+
+    const strategy = await prisma.strategy.findUnique({
+      where: { id: strategyId },
+    });
+    if (!strategy || strategy.status === "ARCHIVED") {
+      throw new AppError("Strategy not found", 404);
+    }
+
     return prisma.strategySubscription.upsert({
       where: { userId_strategyId: { userId, strategyId } },
       update: { active: true },

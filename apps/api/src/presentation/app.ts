@@ -10,6 +10,8 @@ import { strategyRoutes } from "./routes/strategyRoutes";
 import { notificationRoutes } from "./routes/notificationRoutes";
 import { executionRoutes } from "./routes/executionRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
+import { billingRoutes } from "./routes/billingRoutes";
+import { billingWebhook } from "./routes/billingWebhook";
 
 export function createApp() {
   const app = express();
@@ -20,6 +22,12 @@ export function createApp() {
       origin: env.CORS_ORIGIN,
       credentials: true,
     })
+  );
+
+  app.use(
+    "/api/billing/webhook",
+    express.raw({ type: "application/json" }),
+    billingWebhook
   );
   app.use(express.json());
 
@@ -33,6 +41,7 @@ export function createApp() {
   app.use("/api/strategies", strategyRoutes);
   app.use("/api/notifications", notificationRoutes);
   app.use("/api/executions", executionRoutes);
+  app.use("/api/billing", billingRoutes);
   app.use("/api/admin", adminRoutes);
 
   app.use(errorHandler);

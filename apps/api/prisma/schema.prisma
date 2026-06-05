@@ -32,6 +32,14 @@ enum ExecutionStatus {
   FAILED
 }
 
+enum PlatformSubscriptionStatus {
+  NONE
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
 model User {
   id            String         @id @default(cuid())
   walletAddress String         @unique @map("wallet_address")
@@ -39,13 +47,28 @@ model User {
   nonce         String?
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
-  sessions      Session[]
-  subscriptions StrategySubscription[]
-  notifications Notification[]
-  executions    Execution[]
-  trackedWallets TrackedWallet[] @relation("UserTrackedWallets")
+  sessions              Session[]
+  subscriptions         StrategySubscription[]
+  notifications         Notification[]
+  executions            Execution[]
+  trackedWallets        TrackedWallet[] @relation("UserTrackedWallets")
+  platformSubscription  PlatformSubscription?
 
   @@map("users")
+}
+
+model PlatformSubscription {
+  id                   String                     @id @default(cuid())
+  userId               String                     @unique @map("user_id")
+  status               PlatformSubscriptionStatus @default(NONE)
+  stripeCustomerId     String?                    @unique @map("stripe_customer_id")
+  stripeSubscriptionId String?                    @unique @map("stripe_subscription_id")
+  currentPeriodEnd     DateTime?                  @map("current_period_end")
+  createdAt            DateTime                   @default(now()) @map("created_at")
+  updatedAt            DateTime                   @updatedAt @map("updated_at")
+  user                 User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("platform_subscriptions")
 }
 
 model Session {

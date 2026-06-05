@@ -1,12 +1,30 @@
 import { prisma } from "../../infrastructure/database/prisma";
+import { BillingService } from "./BillingService";
+import { AppError } from "../../domain/errors/AppError";
 
 export class ExecutionService {
+  private billing = new BillingService();
+
   async createExecution(input: {
     userId: string;
     strategyId?: string;
     chainId: number;
     payload: Record<string, unknown>;
   }) {
+    if (input.strategyId) {
+      await this.billing.requireActiveSubscription(input.userId);
+
+      const sub = await prisma.strategySubscription.findFirst({
+        where: {
+          userId: input.userId,
+          strategyId: input.strategyId,
+          active: true,
+        },
+      });
+      if (!sub) {
+        throw new AppError("Subscribe to this strategy before executing", 403);
+      }
+    }
     const execution = await prisma.execution.create({
       data: {
         userId: input.userId,
