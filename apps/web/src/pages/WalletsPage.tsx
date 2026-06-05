@@ -1,14 +1,12 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import type { TrackedWalletDto } from "@vaultscout/shared";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api/client";
 import { formatUsd, shortenAddress } from "@/lib/utils";
 
-export default function WalletsPage() {
+export function WalletsPage() {
   const { data: wallets = [], isLoading } = useQuery({
     queryKey: ["wallets"],
     queryFn: () => apiFetch<TrackedWalletDto[]>("/api/wallets"),
@@ -22,7 +20,7 @@ export default function WalletsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {wallets.map((wallet) => (
-            <Link key={wallet.id} href={`/wallets/${wallet.id}`}>
+            <Link key={wallet.id} to={`/wallets/${wallet.id}`}>
               <Card className="transition hover:border-primary/50">
                 <CardHeader>
                   <CardTitle className="text-lg">

@@ -17,9 +17,9 @@ VaultScout/
 │   │       ├── application/    # Business logic services
 │   │       ├── infrastructure/ # Prisma, repositories, external IO
 │   │       └── presentation/   # Routes, middleware, HTTP app
-│   └── web/                    # Next.js 15 frontend
+│   └── web/                    # Vite + React SPA
 │       └── src/
-│           ├── app/            # App Router pages
+│           ├── pages/          # Route pages
 │           ├── components/     # UI + system gate
 │           ├── contexts/       # BackendStatusProvider, Auth
 │           └── lib/            # API client, utilities
@@ -52,10 +52,11 @@ VaultScout/
 ## Prerequisites
 
 - Node.js 20+
-- Docker (for PostgreSQL)
-- [Foundry](https://book.getfoundry.sh/getting-started/installation) (for contracts)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) (optional, for contracts)
 
-## Quick start
+Local development uses **SQLite** (no Docker required). For production, use PostgreSQL and set `DATABASE_URL` accordingly.
+
+## Quick start (Windows / local)
 
 ### 1. Install dependencies
 
@@ -63,38 +64,30 @@ VaultScout/
 npm install
 ```
 
-### 2. Start PostgreSQL
-
-```bash
-docker compose up -d
-```
-
-### 3. Configure environment
+### 2. Configure environment
 
 ```bash
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env.local
 ```
 
-### 4. Database setup
+Set `VITE_WALLETCONNECT_PROJECT_ID` in `apps/web/.env.local` from [dashboard.reown.com](https://dashboard.reown.com) for the wallet modal.
+
+### 3. Database setup (SQLite file at `apps/api/prisma/dev.db`)
 
 ```bash
-npm run db:push
-npm run db:seed
+npm run setup
 ```
 
-### 5. Run development servers
+### 4. Run development servers
 
 ```bash
-# Both API (port 4000) and web (port 3000)
 npm run dev
-
-# Or separately:
-npm run dev:api
-npm run dev:web
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). API runs on port **4000**.
+
+If ports are stuck from a previous run, `npm run predev` frees 3000 and 4000 before starting.
 
 ## API endpoints
 
@@ -139,10 +132,10 @@ forge script script/Deploy.s.sol --rpc-url $RPC_URL_MAINNET --broadcast
 
 ### Web
 
-1. Set `NEXT_PUBLIC_API_URL` to your API origin.
-2. Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`.
+1. Set `VITE_API_URL` to your API origin (production).
+2. Set `VITE_WALLETCONNECT_PROJECT_ID`.
 3. Run `npm run build -w @vaultscout/web`.
-4. Deploy to Vercel or any Node host (`npm run start -w @vaultscout/web`).
+4. Serve the `apps/web/dist` folder with any static host, or `npm run preview -w @vaultscout/web`.
 
 ### Database
 

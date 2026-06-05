@@ -4,8 +4,18 @@ import { IndexerService } from "./application/services/IndexerService";
 
 const app = createApp();
 
-app.listen(env.PORT, () => {
+const server = app.listen(env.PORT, () => {
   console.log(`VaultScout API listening on http://localhost:${env.PORT}`);
+});
+
+server.on("error", (err: NodeJS.ErrnoException) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `Port ${env.PORT} is already in use. Run "npm run predev" from the project root, then try again.`
+    );
+    process.exit(1);
+  }
+  throw err;
 });
 
 if (env.INDEXER_ENABLED && env.NODE_ENV !== "test") {

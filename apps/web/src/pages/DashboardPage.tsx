@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import type { TrackedWalletDto, StrategyDto } from "@vaultscout/shared";
 import { AppShell } from "@/components/layout/AppShell";
@@ -14,7 +12,7 @@ import { apiFetch } from "@/lib/api/client";
 import { formatUsd, shortenAddress } from "@/lib/utils";
 import { TrendingUp, Wallet, Zap } from "lucide-react";
 
-export default function DashboardPage() {
+export function DashboardPage() {
   const { data: wallets = [] } = useQuery({
     queryKey: ["wallets"],
     queryFn: () => apiFetch<TrackedWalletDto[]>("/api/wallets"),

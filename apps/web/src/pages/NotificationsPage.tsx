@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import type { NotificationDto } from "@vaultscout/shared";
 import { AppShell } from "@/components/layout/AppShell";
@@ -7,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function NotificationsPage() {
+export function NotificationsPage() {
   const { isAuthenticated } = useAuth();
 
   const { data: notifications = [] } = useQuery({

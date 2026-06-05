@@ -1,14 +1,12 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import type { TrackedWalletDto, WalletTransactionDto } from "@vaultscout/shared";
-import { useParams } from "next/navigation";
+import { useParams } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api/client";
 import { formatUsd, shortenAddress } from "@/lib/utils";
 
-export default function WalletDetailPage() {
+export function WalletDetailPage() {
   const { id } = useParams<{ id: string }>();
 
   const { data: wallet } = useQuery({

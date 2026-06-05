@@ -7,9 +7,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web -c blue,green \"npm run dev -w @vaultscout/api\" \"npm run dev -w @vaultscout/web\"",
+    "predev": "node scripts/free-ports.mjs",
+    "dev": "node ./node_modules/concurrently/dist/bin/concurrently.js -n api,web -c blue,green \"npm run dev -w @vaultscout/api\" \"npm run dev -w @vaultscout/web\"",
     "dev:api": "npm run dev -w @vaultscout/api",
     "dev:web": "npm run dev -w @vaultscout/web",
+    "setup": "npm run db:generate && npm run db:push && npm run db:seed",
+    "postinstall": "npm run db:generate",
     "build": "npm run build -w @vaultscout/shared && npm run build -w @vaultscout/api && npm run build -w @vaultscout/web",
     "db:generate": "npm run db:generate -w @vaultscout/api",
     "db:migrate": "npm run db:migrate -w @vaultscout/api",
@@ -19,12 +22,27 @@
     "test:contracts": "cd contracts && forge test"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.2.1"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "overrides": {
-    "@noble/hashes": "1.8.0"
+    "@noble/hashes": "1.8.0",
+    "@reown/appkit": "1.8.20",
+    "@reown/appkit-adapter-wagmi": {
+      "@wagmi/connectors": "5.9.9",
+      "@wagmi/core": "2.22.1"
+    },
+    "@reown/appkit-controllers": "1.8.20",
+    "@reown/appkit-utils": "1.8.20",
+    "@reown/appkit-ui": "1.8.20",
+    "@reown/appkit-scaffold-ui": "1.8.20",
+    "@reown/appkit-common": "1.8.20",
+    "@reown/appkit-wallet": "1.8.20",
+    "@reown/appkit-pay": "1.8.20",
+    "@reown/appkit-polyfills": "1.8.20",
+    "@wagmi/connectors": "5.9.9",
+    "@wagmi/core": "2.22.1"
   }
 }

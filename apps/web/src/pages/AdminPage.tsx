@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +11,7 @@ interface AdminStats {
   executions: number;
 }
 
-export default function AdminPage() {
+export function AdminPage() {
   const { user } = useAuth();
 
   const { data: stats } = useQuery({

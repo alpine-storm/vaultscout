@@ -1,6 +1,4 @@
-"use client";
-
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { ConnectWalletButton } from "@/components/wallet/ConnectWalletButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBackendStatus } from "@/contexts/BackendStatusContext";
@@ -22,14 +20,14 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link href="/dashboard" className="text-xl font-bold text-primary">
+          <Link to="/dashboard" className="text-xl font-bold text-primary">
             VaultScout
           </Link>
           <nav className="hidden gap-6 md:flex">
             {links.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                to={link.href}
                 className="text-sm text-muted-foreground transition hover:text-foreground"
               >
                 {link.label}
@@ -37,7 +35,7 @@ export function Navbar() {
             ))}
             {user?.role === "ADMIN" && (
               <Link
-                href="/admin"
+                to="/admin"
                 className="text-sm text-muted-foreground transition hover:text-foreground"
               >
                 Admin

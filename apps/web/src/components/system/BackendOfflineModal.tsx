@@ -43,27 +43,19 @@ export function BackendOfflineModal() {
         )}
 
         <div className="mb-6 rounded-md bg-secondary p-4 text-sm">
-          <p className="mb-2 font-semibold">Start the backend:</p>
+          <p className="mb-2 font-semibold">Start the backend (Windows, no Docker):</p>
           <ol className="list-decimal space-y-1 pl-5 text-muted-foreground">
-            <li>
-              Start PostgreSQL:{" "}
-              <code className="text-foreground">docker compose up -d</code>
-            </li>
             <li>
               From project root:{" "}
               <code className="text-foreground">npm install</code>
             </li>
             <li>
-              Migrate database:{" "}
-              <code className="text-foreground">npm run db:push</code>
+              First-time setup:{" "}
+              <code className="text-foreground">npm run setup</code>
             </li>
             <li>
-              Seed (optional):{" "}
-              <code className="text-foreground">npm run db:seed</code>
-            </li>
-            <li>
-              Run API:{" "}
-              <code className="text-foreground">npm run dev:api</code>
+              Start API + web:{" "}
+              <code className="text-foreground">npm run dev</code>
             </li>
           </ol>
         </div>

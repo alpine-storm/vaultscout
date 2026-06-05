@@ -1,5 +1,3 @@
-"use client";
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { StrategyDto } from "@vaultscout/shared";
 import { AppShell } from "@/components/layout/AppShell";
@@ -10,7 +8,7 @@ import { formatUsd } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { OneClickExecute } from "@/components/execution/OneClickExecute";
 
-export default function StrategiesPage() {
+export function StrategiesPage() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 

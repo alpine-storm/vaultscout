@@ -1,4 +1,7 @@
 node_modules/
+apps/web/dist/
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
 .next/
 dist/
 build/
