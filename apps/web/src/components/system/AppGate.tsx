@@ -1,5 +1,3 @@
-"use client";
-
 import type { ReactNode } from "react";
 import { useBackendStatus } from "@/contexts/BackendStatusContext";
 import { BackendOfflineModal } from "./BackendOfflineModal";

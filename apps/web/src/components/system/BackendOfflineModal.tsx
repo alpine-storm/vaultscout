@@ -1,5 +1,3 @@
-"use client";
-
 import { RefreshCw, ServerCrash } from "lucide-react";
 import { useBackendStatus } from "@/contexts/BackendStatusContext";
 import { Button } from "@/components/ui/button";
@@ -15,47 +13,61 @@ export function BackendOfflineModal() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/95 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/90 backdrop-blur-md"
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="backend-offline-title"
     >
-      <div className="mx-4 w-full max-w-lg rounded-lg border border-border bg-card p-8 shadow-2xl">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-full bg-destructive/20 p-3">
-            <ServerCrash className="h-8 w-8 text-destructive" />
+      <div className="glass-panel mx-4 w-full max-w-lg rounded-2xl p-8 shadow-glow">
+        <div className="mb-6 flex items-center gap-4">
+          <div className="icon-well h-14 w-14 border-destructive/30 bg-destructive/10 text-destructive">
+            <ServerCrash className="h-7 w-7" />
           </div>
-          <h1 id="backend-offline-title" className="text-2xl font-bold">
-            {title}
-          </h1>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              System
+            </p>
+            <h1
+              id="backend-offline-title"
+              className="font-display text-2xl font-semibold"
+            >
+              {title}
+            </h1>
+          </div>
         </div>
 
-        <p className="mb-4 text-muted-foreground">
+        <p className="mb-4 leading-relaxed text-muted-foreground">
           {isChecking
             ? "Checking API availability at GET /api/system/status..."
             : "VaultScout cannot connect to the API server. The application is blocked until the backend is available."}
         </p>
 
         {error && (
-          <p className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <p className="mb-4 rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error}
           </p>
         )}
 
-        <div className="mb-6 rounded-md bg-secondary p-4 text-sm">
-          <p className="mb-2 font-semibold">Start the backend (Windows, no Docker):</p>
-          <ol className="list-decimal space-y-1 pl-5 text-muted-foreground">
+        <div className="mb-6 rounded-xl border border-border/50 bg-secondary/30 p-4 text-sm">
+          <p className="mb-3 font-medium">Start the backend (Windows, no Docker):</p>
+          <ol className="list-decimal space-y-1.5 pl-5 text-muted-foreground">
             <li>
               From project root:{" "}
-              <code className="text-foreground">npm install</code>
+              <code className="mono rounded-md bg-background/60 px-1.5 py-0.5 text-foreground">
+                npm install
+              </code>
             </li>
             <li>
               First-time setup:{" "}
-              <code className="text-foreground">npm run setup</code>
+              <code className="mono rounded-md bg-background/60 px-1.5 py-0.5 text-foreground">
+                npm run setup
+              </code>
             </li>
             <li>
               Start API + web:{" "}
-              <code className="text-foreground">npm run dev</code>
+              <code className="mono rounded-md bg-background/60 px-1.5 py-0.5 text-foreground">
+                npm run dev
+              </code>
             </li>
           </ol>
         </div>
@@ -66,7 +78,7 @@ export function BackendOfflineModal() {
           disabled={isChecking}
         >
           <RefreshCw
-            className={`mr-2 h-4 w-4 ${isChecking ? "animate-spin" : ""}`}
+            className={`h-4 w-4 ${isChecking ? "animate-spin" : ""}`}
           />
           {isChecking ? "Checking..." : "Retry Connection"}
         </Button>

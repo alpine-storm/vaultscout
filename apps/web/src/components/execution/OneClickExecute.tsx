@@ -1,5 +1,3 @@
-"use client";
-
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api/client";
@@ -33,12 +31,13 @@ export function OneClickExecute({
 
   return (
     <Button
+      variant="secondary"
       size="sm"
       onClick={() => execute.mutate()}
       disabled={execute.isPending}
     >
-      <Zap className="mr-2 h-4 w-4" />
-      {execute.isPending ? "Queuing..." : "One-Click Execute"}
+      <Zap className="h-3.5 w-3.5" />
+      {execute.isPending ? "Queuing..." : "Execute"}
     </Button>
   );
 }

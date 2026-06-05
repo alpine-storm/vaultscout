@@ -4,31 +4,103 @@
 
 @layer base {
   :root {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 160 84% 39%;
-    --primary-foreground: 222 47% 6%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 160 60% 25%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84% 60%;
+    --background: 224 32% 5%;
+    --foreground: 210 25% 96%;
+    --card: 224 28% 8%;
+    --card-foreground: 210 25% 96%;
+    --primary: 158 64% 48%;
+    --primary-foreground: 224 32% 5%;
+    --secondary: 224 22% 12%;
+    --secondary-foreground: 210 20% 88%;
+    --muted: 224 20% 11%;
+    --muted-foreground: 215 14% 58%;
+    --accent: 158 40% 14%;
+    --accent-foreground: 158 70% 72%;
+    --destructive: 0 72% 58%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
-    --ring: 160 84% 39%;
-    --radius: 0.5rem;
+    --border: 224 18% 16%;
+    --input: 224 18% 14%;
+    --ring: 158 64% 48%;
+    --radius: 0.875rem;
+    --glow: 158 64% 48%;
   }
 
   * {
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background font-sans text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    @apply bg-primary/25 text-foreground;
+  }
+}
+
+@layer components {
+  .ambient-bg {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(158 64% 48% / 0.12), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, hsl(200 80% 50% / 0.06), transparent),
+      radial-gradient(ellipse 50% 30% at 0% 100%, hsl(158 50% 30% / 0.05), transparent);
+  }
+
+  .grid-overlay {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.35) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+  }
+
+  .glass-panel {
+    @apply border border-border/60 bg-card/70 backdrop-blur-xl;
+    box-shadow:
+      0 8px 32px -8px hsl(224 32% 2% / 0.6),
+      inset 0 1px 0 0 hsl(210 25% 96% / 0.04);
+  }
+
+  .glass-nav {
+    @apply border-b border-border/50 bg-background/60 backdrop-blur-2xl;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent;
+  }
+
+  .list-row {
+    @apply flex items-center justify-between rounded-xl border border-border/50 bg-secondary/30 px-4 py-3.5 transition-all duration-200 hover:border-primary/25 hover:bg-secondary/50;
+  }
+
+  .icon-well {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 bg-secondary/60;
+  }
+
+  .mono {
+    @apply font-mono text-[0.8125rem] tracking-tight;
+  }
+
+  .page-enter {
+    animation: fade-up 0.5s ease-out forwards;
+  }
+}
+
+@layer utilities {
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

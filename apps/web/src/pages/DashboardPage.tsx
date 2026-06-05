@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { TrackedWalletDto, StrategyDto } from "@vaultscout/shared";
 import { AppShell } from "@/components/layout/AppShell";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { StatCard } from "@/components/layout/StatCard";
 import {
   Card,
   CardContent,
@@ -8,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { apiFetch } from "@/lib/api/client";
 import { formatUsd, shortenAddress } from "@/lib/utils";
 import { TrendingUp, Wallet, Zap } from "lucide-react";
@@ -28,65 +31,51 @@ export function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Monitor alpha wallets and subscribed strategies
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Overview"
+        title="Dashboard"
+        description="Monitor alpha wallets, track performance, and manage strategy subscriptions in one place."
+      />
 
-      <div className="mb-8 grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Tracked Wallets</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{wallets.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Active Strategies</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activeStrategies.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Top PnL</CardTitle>
-            <TrendingUp className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">
-              {topWallet ? formatUsd(topWallet.pnlUsd) : "—"}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <StatCard label="Tracked Wallets" value={wallets.length} icon={Wallet} />
+        <StatCard
+          label="Active Strategies"
+          value={activeStrategies.length}
+          icon={Zap}
+        />
+        <StatCard
+          label="Top PnL"
+          value={topWallet ? formatUsd(topWallet.pnlUsd) : "—"}
+          icon={TrendingUp}
+          highlight
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Top Wallets</CardTitle>
-            <CardDescription>Highest reported PnL</CardDescription>
+            <CardDescription>Highest reported profit & loss</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-3">
-              {wallets.slice(0, 5).map((w) => (
-                <li
-                  key={w.id}
-                  className="flex items-center justify-between rounded-md border border-border p-3"
-                >
-                  <div>
-                    <p className="font-medium">{w.label ?? shortenAddress(w.address)}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {shortenAddress(w.address)} · {(w.winRate * 100).toFixed(0)}% win
-                    </p>
+            <ul className="space-y-2">
+              {wallets.slice(0, 5).map((w, i) => (
+                <li key={w.id} className="list-row">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary/80 text-xs font-medium text-muted-foreground">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-medium">
+                        {w.label ?? shortenAddress(w.address)}
+                      </p>
+                      <p className="mono text-muted-foreground">
+                        {shortenAddress(w.address)} · {(w.winRate * 100).toFixed(0)}% win
+                      </p>
+                    </div>
                   </div>
-                  <span className="font-semibold text-primary">
+                  <span className="font-display font-semibold text-primary">
                     {formatUsd(w.pnlUsd)}
                   </span>
                 </li>
@@ -101,21 +90,20 @@ export function DashboardPage() {
             <CardDescription>Available to subscribe</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-3">
+            <ul className="space-y-2">
               {strategies.slice(0, 5).map((s) => (
-                <li
-                  key={s.id}
-                  className="flex items-center justify-between rounded-md border border-border p-3"
-                >
+                <li key={s.id} className="list-row">
                   <div>
                     <p className="font-medium">{s.name}</p>
                     <p className="text-xs text-muted-foreground">
                       Min {formatUsd(s.minCapitalUsd)}
                     </p>
                   </div>
-                  <span className="text-xs uppercase text-muted-foreground">
+                  <Badge
+                    variant={s.status === "ACTIVE" ? "success" : "outline"}
+                  >
                     {s.status}
-                  </span>
+                  </Badge>
                 </li>
               ))}
             </ul>
